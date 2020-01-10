@@ -12,11 +12,9 @@ def getData(entry):
 	if not info.parse:
 		return
 
-	result[info.firstPart] = info.secondPart
+	result[info.firstPart.replace(' ','')] = info.secondPart
 
-	ok = Calcul(result)
-	print(ok)
-
+	return info.first
 
 if __name__ == '__main__':
 
