@@ -97,6 +97,11 @@ class ParseInfo:
 		except NameError as n:
 			return None
 
+	def checkImaginaire(self, part):
+		"""Verification si la partie est i"""
+		if part == 'i':
+			return {'imagianire': 'i', 'sign': '+', 'coefficient': '1'}
+
 	def checkVar(self, part):
 		"""Verification si la partie est une variable"""
 
@@ -186,6 +191,8 @@ class ParseInfo:
 				subElement['number'] = self.checkNumber(value)['number']
 			elif self.checkMatrice(value) is not None:
 				subElement['matrice'] = self.checkMatrice(value)['matrice']
+			elif self.checkImaginaire(value) is not None:
+				subElement['imaginaire'] = self.checkMatrice(value)['imaginaire']
 			else:
 				return None
 
