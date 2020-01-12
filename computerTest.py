@@ -24,17 +24,25 @@ class MyTestCase(TestCase):
     # Test first part variable
     @patch('computerTest.get_input', return_value='a = 5')
     def test_first_part_var(self, input):
-        self.assertEqual(forTest(), {'variable': 'a', 'sign': '+'})
+        self.assertEqual(forTest(), {'variable': 'a', 'sign': '+', 'coefficient': '1'})
 
     # Test first part function
     @patch('computerTest.get_input', return_value='funcA(x) = 5')
     def test_first_part_func(self, input):
-        self.assertEqual(forTest(), {'function': {'name': 'funcA', 'variable': 'x', 'sign': '+'}, 'sign': '+'})
+        self.assertEqual(forTest(), {
+            'function': {
+                'name': 'funcA',
+                'variable': 'x',
+                'coefficient': '1',
+                'sign': '+'},
+            'coefficient': '1',
+            'sign': '+'
+        })
 
     @patch('computerTest.get_input', return_value='5 = 5')
     def test_first_part_number(self, input):
         result = \
-            {'number': 5, 'sign': '+'}
+            {'number': 5, 'coefficient': '1', 'sign': '+'}
         self.assertEqual(forTest(), result)
 
     @patch('computerTest.get_input', return_value='(5 + 3) = 5')
@@ -42,7 +50,8 @@ class MyTestCase(TestCase):
         result = \
             {
                 'number': 8,
-                'sign': '+'
+                'sign': '+',
+                'coefficient': '1',
             }
         self.assertEqual(forTest(), result)
 
@@ -53,20 +62,21 @@ class MyTestCase(TestCase):
             {
                 'matrice': [
                     [
-                        {'number': 2, 'sign': '+'},
-                        {'number': 3, 'sign': '+'},
+                        {'number': 2, 'coefficient': '1', 'sign': '+'},
+                        {'number': 3, 'coefficient': '1', 'sign': '+'},
                     ],
                     [
-                        {'number': 1, 'sign': '+'},
-                        {'number': 2, 'sign': '+'},
+                        {'number': 1, 'coefficient': '1', 'sign': '+'},
+                        {'number': 2, 'coefficient': '1', 'sign': '+'},
                     ],
                     [
-                        {'number': 4, 'sign': '+'},
-                        {'number': 5, 'sign': '+'},
+                        {'number': 4, 'coefficient': '1', 'sign': '+'},
+                        {'number': 5, 'coefficient': '1', 'sign': '+'},
                     ],
 
                 ],
-                'sign': '+'
+                'sign': '+',
+                'coefficient': '1'
             }
         self.assertEqual(forTest(), result)
 
@@ -74,17 +84,19 @@ class MyTestCase(TestCase):
     @patch('computerTest.get_input', return_value='a + 5 = 5')
     def test_first_part_operation(self, input):
         result = {
+            'coefficient': '1', 'sign': '+',
             'operation': [
                 {
                     'sign': '+',
+                    'coefficient': '1',
                     'variable': 'a'
                 },
                 {
                     'sign': '+',
+                    'coefficient': '1',
                     'number': 5
                  }
             ],
-            'sign': '+'
         }
         self.assertEqual(forTest(), result)
 
@@ -92,6 +104,7 @@ class MyTestCase(TestCase):
     def test_first_part_operation2(self, input):
         result = \
             {
+                'coefficient': '1', 'sign': '+',
                 'operation':
                     [
                         {
@@ -99,21 +112,24 @@ class MyTestCase(TestCase):
                                 [
                                     {
                                         'sign': '+',
+                                        'coefficient': '1',
                                         'variable': 'a'
                                     },
                                     {
                                         'number': 5,
+                                        'coefficient': '1',
                                         'sign': '+'
                                     }
                                 ],
+                            'coefficient': '1',
                             'sign': '+'
                         },
                     {
                         'number': 3,
+                        'coefficient': '1',
                         'sign': '+'
                     }
                 ],
-                'sign': '+'
             }
         self.assertEqual(forTest(), result)
 
@@ -121,6 +137,7 @@ class MyTestCase(TestCase):
     def test_first_part_operation3(self, input):
         result = \
             {
+                'coefficient': '1', 'sign': '+',
                 'operation':
                     [
                         {
@@ -128,13 +145,16 @@ class MyTestCase(TestCase):
                                 [
                                     {
                                         'sign': '+',
+                                        'coefficient': '1',
                                         'variable': 'a'
                                     },
                                     {
                                         'number': 5,
+                                        'coefficient': '1',
                                         'sign': '+'
                                     }
                                 ],
+                            'coefficient': '1',
                             'sign': '+'
                         },
                         {
@@ -142,17 +162,19 @@ class MyTestCase(TestCase):
                                 [
                                     {
                                         'sign': '+',
+                                        'coefficient': '1',
                                         'number': 3
                                     },
                                     {
                                         'variable': 'x',
+                                        'coefficient': '1',
                                         'sign': '-'
                                     }
                                 ],
-                            'sign': '*'
+                            'sign': '*',
+                            'coefficient': '1',
                         },
                 ],
-                'sign': '+'
             }
         self.assertEqual(forTest(), result)
 
@@ -160,6 +182,7 @@ class MyTestCase(TestCase):
     def test_first_part_operation4(self, input):
         result = \
             {
+                'coefficient': '1', 'sign': '+',
                 'operation':
                     [
                         {
@@ -167,13 +190,16 @@ class MyTestCase(TestCase):
                                 [
                                     {
                                         'sign': '+',
+                                        'coefficient': '1',
                                         'variable': 'a'
                                     },
                                     {
                                         'number': 5,
+                                        'coefficient': '1',
                                         'sign': '+'
                                     }
                                 ],
+                            'coefficient': '1',
                             'sign': '+'
                         },
                         {
@@ -181,21 +207,24 @@ class MyTestCase(TestCase):
                                 [
                                     {
                                         'sign': '+',
+                                        'coefficient': '1',
                                         'number': 3
                                     },
                                     {
                                         'variable': 'x',
+                                        'coefficient': '1',
                                         'sign': '-'
                                     }
                                 ],
-                            'sign': '*'
+                            'sign': '*',
+                            'coefficient': '1',
                         },
                         {
                             'variable': 'x',
+                            'coefficient': '1',
                             'sign': '+'
                         }
                 ],
-                'sign': '+'
             }
         self.assertEqual(forTest(), result)
 
@@ -203,6 +232,7 @@ class MyTestCase(TestCase):
     def test_first_part_operation5(self, input):
         result = \
             {
+                'coefficient': '1', 'sign': '+',
                 'operation':
                     [
                         {
@@ -210,13 +240,16 @@ class MyTestCase(TestCase):
                                 [
                                     {
                                         'sign': '+',
+                                        'coefficient': '1',
                                         'variable': 'a'
                                     },
                                     {
                                         'number': 5,
+                                        'coefficient': '1',
                                         'sign': '+'
                                     }
                                 ],
+                            'coefficient': '1',
                             'sign': '+'
                         },
                         {
@@ -224,41 +257,48 @@ class MyTestCase(TestCase):
                                 [
                                     {
                                         'sign': '+',
+                                        'coefficient': '1',
                                         'number': 3
                                     },
                                     {
                                         'variable': 'x',
+                                        'coefficient': '1',
                                         'sign': '-'
                                     }
                                 ],
+                            'coefficient': '1',
                             'sign': '*'
                         },
                         {
-                            'function': {'name': 'funcA', 'variable': 'x', 'sign': '+'},
+                            'function': {'name': 'funcA', 'variable': 'x', 'coefficient': '1', 'sign': '+'},
+                            'coefficient': '1',
                             'sign': '+'
                         }
                     ],
-                'sign': '+'
             }
         self.assertEqual(forTest(), result)
 
     @patch('computerTest.get_input', return_value='(a + 5) * (4 / (3 - x)) = 5')
     def test_first_part_operation6(self, input):
         result = \
-            {'operation':
+            {
+                'coefficient': '1', 'sign': '+',
+                'operation':
                  [
-                     {'parenthesis': [{'variable': 'a', 'sign': '+'}, {'number': 5, 'sign': '+'}],
+                     {'parenthesis': [{'variable': 'a', 'coefficient': '1', 'sign': '+'}, {'number': 5, 'coefficient': '1', 'sign': '+'}],
+                      'coefficient': '1',
                       'sign': '+'},
 
                      {'parenthesis': [
-                         {'number': 4, 'sign': '+'},
+                         {'number': 4, 'coefficient': '1', 'sign': '+'},
                          {'parenthesis': [
-                            {'number': 3, 'sign': '+'},
-                            {'variable': 'x', 'sign': '-'}],
+                            {'number': 3, 'coefficient': '1', 'sign': '+'},
+                            {'variable': 'x', 'coefficient': '1', 'sign': '-'}],
+                         'coefficient': '1',
                          'sign': '/'}],
+                     'coefficient': '1',
                      'sign': '*'}
                  ],
-                'sign': '+'
             }
 
         self.assertEqual(forTest(), result)
@@ -267,14 +307,16 @@ class MyTestCase(TestCase):
     def test_first_part_operation7(self, input):
         result = \
             {
+                'coefficient': '1',
+                'sign': '+',
                 'operation': [
                     {'sign': '+',
-                    'parenthesis': [
-                        {'variable': 'a', 'sign': '+'},
-                        {'number': 5, 'sign': '+'}
+                     'coefficient': '1',
+                     'parenthesis': [
+                        {'variable': 'a', 'coefficient': '1', 'sign': '+'},
+                        {'number': 5, 'coefficient': '1', 'sign': '+'}
                     ]}
                 ],
-                'sign': '+'
             }
 
         self.assertEqual(forTest(), result)
@@ -282,18 +324,19 @@ class MyTestCase(TestCase):
 
     @patch('computerTest.get_input', return_value='funcA(a + 5) * (4 / (3 - x)) = 5')
     def test_first_part_function(self, input):
-        result = {'operation':
+        result = {
+            'coefficient': '1', 'sign': '+',
+            'operation':
                       [
-                          {'sign': '+', 'function': {'name': 'funcA', 'sign': '+', 'operation': [
-                              {'sign': '+', 'variable': 'a'}, {'sign': '+', 'number': 5}]}},
-                          {'sign': '*', 'parenthesis': [
-                              {'sign': '+', 'number': 4},
-                              {'sign': '/', 'parenthesis': [
-                                  {'sign': '+', 'number': 3},
-                                  {'sign': '-', 'variable': 'x'}
+                          {'sign': '+', 'coefficient': '1', 'function': {'name': 'funcA', 'coefficient': '1', 'sign': '+', 'operation': [
+                              {'sign': '+', 'coefficient': '1', 'variable': 'a'}, {'sign': '+', 'coefficient': '1', 'number': 5}]}},
+                          {'sign': '*', 'coefficient': '1', 'parenthesis': [
+                              {'sign': '+', 'coefficient': '1', 'number': 4},
+                              {'sign': '/', 'coefficient': '1', 'parenthesis': [
+                                  {'sign': '+', 'coefficient': '1', 'number': 3},
+                                  {'sign': '-', 'coefficient': '1', 'variable': 'x'}
                               ]}]}
                       ],
-                'sign': '+'
         }
 
         self.assertEqual(forTest(), result)
@@ -301,40 +344,85 @@ class MyTestCase(TestCase):
     @patch('computerTest.get_input', return_value='funcA(5) = 3')
     def test_first_part_function2(self, input):
         result = {
+            'coefficient': '1', 'sign': '+',
             'operation': [{
                 'function': {
                     'number': 5,
                     'sign': '+',
+                    'coefficient': '1',
                     'name': 'funcA'},
+                'coefficient': '1',
                 "sign": '+'}
             ],
-            'sign': '+'
         }
 
         self.assertEqual(forTest(), result)
 
     @patch('computerTest.get_input', return_value='funcA(a + 5) * (4 / (3 - x)) + [[2, 3], [1, 2], [4, 5]] = 5')
     def test_first_part_function3(self, input):
-        result = {'operation':
+        result = {
+            'coefficient': '1', 'sign': '+',
+            'operation':
                       [
-                          {'sign': '+', 'function': {'name': 'funcA', 'sign': '+', 'operation': [
-                              {'sign': '+', 'variable': 'a'}, {'sign': '+', 'number': 5}]}},
-                          {'sign': '*', 'parenthesis': [
-                              {'sign': '+', 'number': 4},
-                              {'sign': '/', 'parenthesis': [
-                                  {'sign': '+', 'number': 3},
-                                  {'sign': '-', 'variable': 'x'}
+                          {'sign': '+', 'coefficient': '1', 'function': {'name': 'funcA', 'coefficient': '1', 'sign': '+', 'operation': [
+                              {'sign': '+', 'coefficient': '1', 'variable': 'a'}, {'sign': '+', 'coefficient': '1', 'number': 5}]}},
+                          {'sign': '*', 'coefficient': '1', 'parenthesis': [
+                              {'sign': '+', 'coefficient': '1', 'number': 4},
+                              {'sign': '/', 'coefficient': '1', 'parenthesis': [
+                                  {'sign': '+', 'coefficient': '1', 'number': 3},
+                                  {'sign': '-', 'coefficient': '1', 'variable': 'x'}
                               ]}]},
                           {
                               'matrice': [
-                                  [{'number': 2, 'sign': '+'}, {'number': 3, 'sign': '+'}],
-                                  [{'number': 1, 'sign': '+'}, {'number': 2, 'sign': '+'}],
-                                  [{'number': 4, 'sign': '+'}, {'number': 5, 'sign': '+'}]
+                                  [{'number': 2, 'coefficient': '1', 'sign': '+'}, {'number': 3, 'coefficient': '1', 'sign': '+'}],
+                                  [{'number': 1, 'coefficient': '1', 'sign': '+'}, {'number': 2, 'coefficient': '1', 'sign': '+'}],
+                                  [{'number': 4, 'coefficient': '1', 'sign': '+'}, {'number': 5, 'coefficient': '1', 'sign': '+'}]
                               ],
-                              'sign': '+'
+                              'sign': '+',
+                              'coefficient': '1'
                           }
                       ],
-                'sign': '+'
+        }
+
+        self.assertEqual(forTest(), result)
+
+    @patch('computerTest.get_input', return_value='funcA(a + 5)^2 * (4^puissance / (3 - x^5)) + [[2, 3], [1, 2], [4, 5]]^5 = 5')
+    def test_first_part_puissance(self, input):
+        result = {
+            'coefficient': '1', 'sign': '+',
+            'operation':
+                [
+                    {'sign': '+', 'coefficient': '2',
+                     'function': {'name': 'funcA', 'coefficient': '1', 'sign': '+', 'operation': [
+                         {'sign': '+', 'coefficient': '1', 'variable': 'a'},
+                         {'sign': '+', 'coefficient': '1', 'number': 5}]}},
+                    {'sign': '*', 'coefficient': '1', 'parenthesis': [
+                        {'sign': '+', 'coefficient': 'puissance', 'number': 4},
+                        {'sign': '/', 'coefficient': '1', 'parenthesis': [
+                            {'sign': '+', 'coefficient': '1', 'number': 3},
+                            {'sign': '-', 'coefficient': '5', 'variable': 'x'}
+                        ]}]},
+                    {
+                        'matrice': [
+                            [{'number': 2, 'coefficient': '1', 'sign': '+'},
+                             {'number': 3, 'coefficient': '1', 'sign': '+'}],
+                            [{'number': 1, 'coefficient': '1', 'sign': '+'},
+                             {'number': 2, 'coefficient': '1', 'sign': '+'}],
+                            [{'number': 4, 'coefficient': '1', 'sign': '+'},
+                             {'number': 5, 'coefficient': '1', 'sign': '+'}]
+                        ],
+                        'sign': '+',
+                        'coefficient': '5'
+                    }
+                ],
+        }
+
+        self.assertEqual(forTest(), result)
+
+    @patch('computerTest.get_input', return_value='3x + 2 = 5')
+    def test_construction(self, input):
+        result = {
+
         }
 
         self.assertEqual(forTest(), result)

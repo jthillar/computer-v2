@@ -23,8 +23,13 @@ class ParseInfo:
 		if len(badConstruction) > 0:
 			return
 		part = part.replace(' ', '')
+		part = re.sub(r'([a-z])(\d+)', r'\1*\2', part)
+		part = re.sub(r'(\d+)([a-z])', r'\1*\2', part)
 		doubleSign = re.findall('[\+\-\*\%\/][\+\-\*\%\/]', part)
-		if len(doubleSign) > 0:
+		for	ds in doubleSign:
+			if ds != '**':
+				return
+		if '***' in part:
 			return
 
 		return part
@@ -70,22 +75,34 @@ class ParseInfo:
 		if self.secondPart is None:
 			return
 
+	def checkCoef(self, part):
+		coef = re.findall('\^\w+$', part)
+		if len(coef) > 0:
+			part = part.replace(coef[0], '')
+			coef = coef[0][1:]
+		else:
+			coef = '1'
+		return part, coef
+
 	def checkNumber(self, part):
 		"""Verification si la partie est un nombre"""
 		try:
-			result = eval(part)
-			if isinstance(result, list):
+			part, coef = self.checkCoef(part)
+			part = eval(part)
+			if isinstance(part, list):
 				raise NameError
-			sign = '+' if result >= 0 else '-'
-			return {'number': abs(result), 'sign': sign}
+			sign = '+' if part >= 0 else '-'
+			return {'number': abs(part), 'sign': sign, 'coefficient': coef}
+
 		except NameError as n:
 			return None
 
 	def checkVar(self, part):
 		"""Verification si la partie est une variable"""
+
 		if not part.isalpha() or part == 'i':
 			return None
-		return {'variable': part, 'sign': '+'}
+		return {'variable': part, 'sign': '+', 'coefficient': '1'}
 
 	def checkFunc(self, part):
 		"""Verification si la partie est suelement un nom de fonction"""
@@ -96,8 +113,10 @@ class ParseInfo:
 		result = {'function':
 					{'name': re.findall('^[a-zA-Z]+(?=\()', part)[0],
 					'variable': re.findall('(?<=\()[a-zA-Z](?=\))', part)[0],
+					'coefficient': '1',
 					'sign': '+'},
-				'sign':'+'}
+				'sign': '+',
+				'coefficient': '1'}
 
 		return result
 
@@ -131,9 +150,9 @@ class ParseInfo:
 				else:
 					return None
 
-			return {'matrice': matrice, 'sign': '+'}
+			return {'matrice': matrice, 'sign': '+', 'coefficient': '1'}
 
-	def checkOp(self, part):
+	def checkOp(self, part, recursion=0):
 
 		operation = list()
 		# On récupère les position par couple de parentheses
@@ -153,6 +172,7 @@ class ParseInfo:
 		signs = [x for i, x in enumerate(infos) if i % 2 == 0]
 		values = [x for i, x in enumerate(infos) if i % 2 == 1]
 		for sign, value in zip(signs, values):
+			value, coef = self.checkCoef(value)
 			subElement = dict(sign=sign)
 			if len(re.findall('^\"p\d+\"', value)) > 0:
 				subElement['parenthesis'] = parenthesisDict[value]
@@ -168,9 +188,11 @@ class ParseInfo:
 				subElement['matrice'] = self.checkMatrice(value)['matrice']
 			else:
 				return None
+
+			subElement['coefficient'] = coef
 			operation.append(subElement)
 
-		return {'operation': operation, 'sign': '+'}
+		return {'operation': operation, 'coefficient': '1', 'sign': '+',}
 
 	def positionParentheses(self, part):
 
