@@ -56,6 +56,9 @@ class ParseInfo:
 		func = self.checkFunc(part)
 		if func is not None: return func
 
+		mat = self.checkMatrice(part)
+		if mat is not None: return mat
+
 		op = self.checkOp(part)
 		if op is not None: return op
 
@@ -71,6 +74,8 @@ class ParseInfo:
 		"""Verification si la partie est un nombre"""
 		try:
 			result = eval(part)
+			if isinstance(result, list):
+				raise NameError
 			sign = '+' if result >= 0 else '-'
 			return {'number': abs(result), 'sign': sign}
 		except NameError as n:
@@ -108,6 +113,26 @@ class ParseInfo:
 				functionDict['\"f' + str(id) + '\"'] = self.checkFunc(func)
 		return part, functionDict
 
+	def checkMatrice(self, part):
+
+		if part[0:2] == '[[' and part[-2:] == ']]':
+			matriceSplit = part[2:-2].split('],[')
+			for element in matriceSplit:
+				if len(re.findall('^.+\,.+$', element)) > 0:
+					continue
+				return None
+
+			matrice = list()
+			for element in matriceSplit:
+				parsedElement1 = self.parseFirst(element.split(',')[0])
+				parsedElement2 = self.parseFirst(element.split(',')[1])
+				if parsedElement1 is not None and parsedElement2 is not None:
+					matrice.append([parsedElement1, parsedElement2])
+				else:
+					return None
+
+			return {'matrice': matrice, 'sign': '+'}
+
 	def checkOp(self, part):
 
 		operation = list()
@@ -134,11 +159,13 @@ class ParseInfo:
 			elif len(re.findall('^\"fp\d+\"', value)) > 0:
 				subElement['function'] = parenthesisDict[value]
 			elif len(re.findall('^\"f\d+\"', value)) > 0:
-				subElement['function'] = functionDict[value]
+				subElement['function'] = functionDict[value]['function']
 			elif self.checkVar(value) is not None:
 				subElement['variable'] = self.checkVar(value)['variable']
-			elif self.checkNumber(value):
+			elif self.checkNumber(value) is not None:
 				subElement['number'] = self.checkNumber(value)['number']
+			elif self.checkMatrice(value) is not None:
+				subElement['matrice'] = self.checkMatrice(value)['matrice']
 			else:
 				return None
 			operation.append(subElement)

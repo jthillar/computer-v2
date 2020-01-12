@@ -46,6 +46,30 @@ class MyTestCase(TestCase):
             }
         self.assertEqual(forTest(), result)
 
+
+    @patch('computerTest.get_input', return_value='[[2, 3], [1, 2], [4, 5]] = 3')
+    def test_first_part_matrice(self, input):
+        result = \
+            {
+                'matrice': [
+                    [
+                        {'number': 2, 'sign': '+'},
+                        {'number': 3, 'sign': '+'},
+                    ],
+                    [
+                        {'number': 1, 'sign': '+'},
+                        {'number': 2, 'sign': '+'},
+                    ],
+                    [
+                        {'number': 4, 'sign': '+'},
+                        {'number': 5, 'sign': '+'},
+                    ],
+
+                ],
+                'sign': '+'
+            }
+        self.assertEqual(forTest(), result)
+
     # Test first part operation
     @patch('computerTest.get_input', return_value='a + 5 = 5')
     def test_first_part_operation(self, input):
@@ -210,7 +234,7 @@ class MyTestCase(TestCase):
                             'sign': '*'
                         },
                         {
-                            'function': 'funcA(x)',
+                            'function': {'name': 'funcA', 'variable': 'x', 'sign': '+'},
                             'sign': '+'
                         }
                     ],
@@ -285,6 +309,32 @@ class MyTestCase(TestCase):
                 "sign": '+'}
             ],
             'sign': '+'
+        }
+
+        self.assertEqual(forTest(), result)
+
+    @patch('computerTest.get_input', return_value='funcA(a + 5) * (4 / (3 - x)) + [[2, 3], [1, 2], [4, 5]] = 5')
+    def test_first_part_function3(self, input):
+        result = {'operation':
+                      [
+                          {'sign': '+', 'function': {'name': 'funcA', 'sign': '+', 'operation': [
+                              {'sign': '+', 'variable': 'a'}, {'sign': '+', 'number': 5}]}},
+                          {'sign': '*', 'parenthesis': [
+                              {'sign': '+', 'number': 4},
+                              {'sign': '/', 'parenthesis': [
+                                  {'sign': '+', 'number': 3},
+                                  {'sign': '-', 'variable': 'x'}
+                              ]}]},
+                          {
+                              'matrice': [
+                                  [{'number': 2, 'sign': '+'}, {'number': 3, 'sign': '+'}],
+                                  [{'number': 1, 'sign': '+'}, {'number': 2, 'sign': '+'}],
+                                  [{'number': 4, 'sign': '+'}, {'number': 5, 'sign': '+'}]
+                              ],
+                              'sign': '+'
+                          }
+                      ],
+                'sign': '+'
         }
 
         self.assertEqual(forTest(), result)
