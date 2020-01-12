@@ -68,9 +68,11 @@ class ParseInfo:
 			return
 
 	def checkNumber(self, part):
+		"""Verification si la partie est un nombre"""
 		try:
 			result = eval(part)
-			return {'number': result}
+			sign = '+' if result >= 0 else '-'
+			return {'number': abs(result), 'sign': sign}
 		except NameError as n:
 			return None
 
@@ -78,14 +80,21 @@ class ParseInfo:
 		"""Verification si la partie est une variable"""
 		if not part.isalpha() or part == 'i':
 			return None
-		return {'variable': part}
+		return {'variable': part, 'sign': '+'}
 
 	def checkFunc(self, part):
 		"""Verification si la partie est suelement un nom de fonction"""
 		func = re.findall('^[a-zA-Z]+\([a-zA-Z]+\)$', part)
 		if len(func) != 1:
 			return None
-		return {'function': part}
+
+		result = {'function':
+					{'name': re.findall('^[a-zA-Z]+(?=\()', part)[0],
+					'variable': re.findall('(?<=\()[a-zA-Z](?=\))', part)[0],
+					'sign': '+'},
+				'sign':'+'}
+
+		return result
 
 	def checkMultiFunc(self, part):
 		""" On regarde si un element ressemble à la syntaxe d'un nom de function
@@ -96,19 +105,19 @@ class ParseInfo:
 		if len(funcVec) > 0:
 			for id, func in enumerate(funcVec):
 				part = part.replace(func, '\"f' + str(id) + '\"')
-				functionDict['\"f' + str(id) + '\"'] = func
+				functionDict['\"f' + str(id) + '\"'] = self.checkFunc(func)
 		return part, functionDict
 
 	def checkOp(self, part):
 
 		operation = list()
 		# On récupère les position par couple de parentheses
-		if len(part) > 0 and part[0] != '-':
+		if len(part) > 0 and part[0] not in ['+', '-'] :
 			part = '+' + part
 
 		part, functionDict = self.checkMultiFunc(part)
 
-		part, parenthesisDict = self.checkParenthesis(part, operation)
+		part, parenthesisDict = self.checkParenthesisAndFunction(part, operation)
 		if part is None: return None
 
 		infos = re.split(r'([\+\-\/\*\%])', part)
@@ -122,21 +131,23 @@ class ParseInfo:
 			subElement = dict(sign=sign)
 			if len(re.findall('^\"p\d+\"', value)) > 0:
 				subElement['parenthesis'] = parenthesisDict[value]
+			elif len(re.findall('^\"fp\d+\"', value)) > 0:
+				subElement['function'] = parenthesisDict[value]
 			elif len(re.findall('^\"f\d+\"', value)) > 0:
 				subElement['function'] = functionDict[value]
 			elif self.checkVar(value) is not None:
-				subElement.update(self.checkVar(value))
+				subElement['variable'] = self.checkVar(value)['variable']
 			elif self.checkNumber(value):
-				subElement.update(self.checkNumber(value))
+				subElement['number'] = self.checkNumber(value)['number']
 			else:
 				return None
 			operation.append(subElement)
 
-		return {'operation': operation}
+		return {'operation': operation, 'sign': '+'}
 
 	def positionParentheses(self, part):
 
-		opening = [i for i, c in enumerate(part) if c == '(']
+		opening = [(x.start(), x.end()-1) for x in re.finditer('[a-zA-Z]+\(|(?<=[\+\-\*\%\/])\(', part)]
 		closing = [i for i, c in enumerate(part) if c == ')']
 		if len(opening) != len(closing):
 			return None
@@ -144,7 +155,7 @@ class ParseInfo:
 		for posClosing in closing:
 			for i, posOpening in enumerate(opening):
 				index = i
-				if posOpening > posClosing:
+				if posOpening[0] > posClosing:
 					index = i - 1
 					result.append([opening[index], posClosing])
 					opening.pop(index)
@@ -154,7 +165,7 @@ class ParseInfo:
 					opening.pop(index)
 
 		for couple in result:
-			if couple[0] > couple[1]:
+			if couple[0][1] > couple[1]:
 				return None
 
 		return result
@@ -165,14 +176,14 @@ class ParseInfo:
 		coupleToDrop = list()
 		for i, couple in enumerate(coupleVec):
 			for couple2 in coupleVec:
-				if couple[0] > couple2[0] and couple[1] < couple2[1]:
+				if couple[0][0] > couple2[0][0] and couple[1] < couple2[1]:
 					coupleToDrop.append(i)
 		for i in coupleToDrop:
 			del coupleVec[i]
 
 		return coupleVec
 
-	def checkParenthesis(self, part, operation):
+	def checkParenthesisAndFunction(self, part, operation):
 		coupleVec = self.positionParentheses(part)
 		if coupleVec is None:
 			return None, None
@@ -182,20 +193,28 @@ class ParseInfo:
 			parenthesisDict = dict()
 			partToDropVec = list()
 			for id, couple in enumerate(coupleVec):
-				resultCouple = self.parseFirst(part[couple[0] + 1:couple[1]])
+				resultCouple = self.parseFirst(part[couple[0][1] + 1:couple[1]])
 				if resultCouple is None:
 					return None, None
-				if 'operation' in resultCouple:
-					parenthesisDict['\"p' + str(id) + '\"'] = resultCouple['operation']
-					partToDropVec.append(['operation', part[couple[0]:couple[1] + 1]])
+				type = 'parenthesis' if couple[0][1] - couple[0][0] == 0 else 'function'
+				if type == 'parenthesis':
+					if 'operation' in resultCouple:
+						parenthesisDict['\"p' + str(id) + '\"'] = resultCouple['operation']
+						partToDropVec.append([type, 'operation', part[couple[0][0]:couple[1] + 1]])
+					else:
+						partToDropVec.append([type, 'notOperation', part[couple[0][0]:couple[1] + 1]])
 				else:
-					partToDropVec.append(['notOperation', part[couple[0]:couple[1] + 1]])
+					resultCouple['name'] = part[couple[0][0]:couple[0][1]]
+					parenthesisDict['\"fp' + str(id) + '\"'] = resultCouple
+					partToDropVec.append([type, 'operation', part[couple[0][0]:couple[1] + 1]])
 
 			for id, partToDrop in enumerate(partToDropVec):
-				if partToDrop[0] == 'operation':
-					part = part.replace(partToDrop[1], '\"p' + str(id) + '\"')
+				if partToDrop[1] == 'operation' and partToDrop[0] == 'parenthesis':
+					part = part.replace(partToDrop[2], '\"p' + str(id) + '\"')
+				elif partToDrop[0] == 'function':
+					part = part.replace(partToDrop[2], '\"fp' + str(id) + '\"')
 				else:
-					part = part.replace(partToDrop[1], partToDrop[1][1:-1])
+					part = part.replace(partToDrop[2], partToDrop[2][1:-1])
 
 			return part, parenthesisDict
 
