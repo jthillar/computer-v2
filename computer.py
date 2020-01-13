@@ -2,26 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from parsing import ParseInfo
+from Parsing import ParseInfo
 
 result = dict()
 
+
 def getData(entry):
+    info = ParseInfo(entry)
+    if not info.parse:
+        return
 
-	info = ParseInfo(entry)
-	if not info.parse:
-		return
+    return info
 
-	return info
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        exit('You shouln\'t set an entry')
 
-	if len(sys.argv) > 1:
-		exit('You shouln\'t set an entry')
-
-	while True:
-		inp = str(input("> "))
-		if inp == 'quit()':
-			exit(0)
-		else:
-			getData(inp)
+    while True:
+        inp = str(input("> "))
+        if inp == 'quit()':
+            exit(0)
+        else:
+            getData(inp)
