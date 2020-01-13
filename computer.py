@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from Parsing import ParseInfo
+from parsing import ParseInfo
 
 result = dict()
 
