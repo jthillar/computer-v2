@@ -14,7 +14,7 @@ class ParseInfo:
 	def __init__(self, entry):
 		self.firstPart, self.secondPart = self.splitEntry(entry)
 		self.first = self.parseFirst(self.firstPart)
-		self.secondType = self.parseSecond()
+		self.second = self.parseSecond(self.secondPart)
 		self.parse = True
 
 	def checkConstruction(self, part):
@@ -48,7 +48,7 @@ class ParseInfo:
 
 	def parseFirst(self, part):
 
-		if part is None:
+		if part is None or part == '':
 			self.parse = False
 			return
 
@@ -70,10 +70,27 @@ class ParseInfo:
 		self.parse = False
 		return None
 
-	def parseSecond(self):
+	def parseSecond(self, part):
 
-		if self.secondPart is None:
+		if part is None or part == '':
+			self.parse=False
 			return
+
+		result = {'resolution': True}
+		if part == '?':
+			return result
+
+		if part[-1] == '?':
+			part = part[:-1]
+		else:
+			result['resolution'] = False
+		parsePart = self.parseFirst(part)
+		if parsePart is None:
+			self.parse = False
+			return
+
+		result.update(parsePart)
+		return result
 
 	def checkCoef(self, part):
 		coef = re.findall('\^\w+$', part)
@@ -94,13 +111,13 @@ class ParseInfo:
 			sign = '+' if part >= 0 else '-'
 			return {'number': abs(part), 'sign': sign, 'coefficient': coef}
 
-		except NameError as n:
+		except (NameError, SyntaxError) as e:
 			return None
 
 	def checkImaginaire(self, part):
 		"""Verification si la partie est i"""
 		if part == 'i':
-			return {'imagianire': 'i', 'sign': '+', 'coefficient': '1'}
+			return {'imaginaire': 'i', 'sign': '+', 'coefficient': '1'}
 
 	def checkVar(self, part):
 		"""Verification si la partie est une variable"""
@@ -140,7 +157,7 @@ class ParseInfo:
 	def checkMatrice(self, part):
 
 		if part[0:2] == '[[' and part[-2:] == ']]':
-			matriceSplit = part[2:-2].split('],[')
+			matriceSplit = part[2:-2].split('];[')
 			for element in matriceSplit:
 				if len(re.findall('^.+\,.+$', element)) > 0:
 					continue
@@ -169,7 +186,7 @@ class ParseInfo:
 		part, parenthesisDict = self.checkParenthesisAndFunction(part, operation)
 		if part is None: return None
 
-		infos = re.split(r'([\+\-\/\*\%])', part)
+		infos = re.split(r'([\+\-\/\%]|[\*]+)', part)
 		if len(infos) > 0 and infos[0] == '':
 			del infos[0]
 		if len(infos) % 2 != 0:
@@ -192,14 +209,14 @@ class ParseInfo:
 			elif self.checkMatrice(value) is not None:
 				subElement['matrice'] = self.checkMatrice(value)['matrice']
 			elif self.checkImaginaire(value) is not None:
-				subElement['imaginaire'] = self.checkMatrice(value)['imaginaire']
+				subElement['imaginaire'] = self.checkImaginaire(value)['imaginaire']
 			else:
-				return None
+				return
 
 			subElement['coefficient'] = coef
 			operation.append(subElement)
 
-		return {'operation': operation, 'coefficient': '1', 'sign': '+',}
+		return {'operation': operation, 'coefficient': '1', 'sign': '+'}
 
 	def positionParentheses(self, part):
 

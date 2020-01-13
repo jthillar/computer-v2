@@ -24,12 +24,20 @@ class MyTestCase(TestCase):
     # Test first part variable
     @patch('computerTest.get_input', return_value='a = 5')
     def test_first_part_var(self, input):
-        self.assertEqual(forTest(), {'variable': 'a', 'sign': '+', 'coefficient': '1'})
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        self.assertEqual(equationPart1, {'variable': 'a', 'sign': '+', 'coefficient': '1'})
+        self.assertEqual(equationPart2, {'number': 5, 'sign': '+', 'coefficient': '1', 'resolution': False})
 
     # Test first part function
     @patch('computerTest.get_input', return_value='funcA(x) = 5')
     def test_first_part_func(self, input):
-        self.assertEqual(forTest(), {
+
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        self.assertEqual(equationPart1, {
             'function': {
                 'name': 'funcA',
                 'variable': 'x',
@@ -38,27 +46,48 @@ class MyTestCase(TestCase):
             'coefficient': '1',
             'sign': '+'
         })
+        self.assertEqual(equationPart2, {
+            'number': 5,
+            'coefficient': '1',
+            'sign': '+',
+            'resolution': False
+        })
 
     @patch('computerTest.get_input', return_value='5 = 5')
     def test_first_part_number(self, input):
-        result = \
-            {'number': 5, 'coefficient': '1', 'sign': '+'}
-        self.assertEqual(forTest(), result)
+
+        equation = forTest()
+        equationPart1 = equation.first
+        test1 = {'number': 5, 'coefficient': '1', 'sign': '+'}
+        
+        equationPart2 = equation.second
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
     @patch('computerTest.get_input', return_value='(5 + 3) = 5')
     def test_first_part_number2(self, input):
-        result = \
+        equation = forTest()
+        equationPart1 = equation.first
+        test1 = \
             {
                 'number': 8,
                 'sign': '+',
                 'coefficient': '1',
             }
-        self.assertEqual(forTest(), result)
+        equationPart2 = equation.second
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
 
-    @patch('computerTest.get_input', return_value='[[2, 3], [1, 2], [4, 5]] = 3')
+    @patch('computerTest.get_input', return_value='[[2, 3]; [1, 2]; [4, 5]] = 3')
     def test_first_part_matrice(self, input):
-        result = \
+       
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = \
             {
                 'matrice': [
                     [
@@ -78,12 +107,18 @@ class MyTestCase(TestCase):
                 'sign': '+',
                 'coefficient': '1'
             }
-        self.assertEqual(forTest(), result)
+        test2 = {'number': 3, 'coefficient': '1', 'sign': '+', 'resolution': False}
+
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
     # Test first part operation
     @patch('computerTest.get_input', return_value='a + 5 = 5')
     def test_first_part_operation(self, input):
-        result = {
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = {
             'coefficient': '1', 'sign': '+',
             'operation': [
                 {
@@ -98,11 +133,17 @@ class MyTestCase(TestCase):
                  }
             ],
         }
-        self.assertEqual(forTest(), result)
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
+
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
     @patch('computerTest.get_input', return_value='(a + 5) + 3 = 5')
     def test_first_part_operation2(self, input):
-        result = \
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = \
             {
                 'coefficient': '1', 'sign': '+',
                 'operation':
@@ -131,11 +172,17 @@ class MyTestCase(TestCase):
                     }
                 ],
             }
-        self.assertEqual(forTest(), result)
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
+
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
     @patch('computerTest.get_input', return_value='(a + 5) * (3 - x) = 5')
     def test_first_part_operation3(self, input):
-        result = \
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = \
             {
                 'coefficient': '1', 'sign': '+',
                 'operation':
@@ -176,11 +223,17 @@ class MyTestCase(TestCase):
                         },
                 ],
             }
-        self.assertEqual(forTest(), result)
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
+
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
     @patch('computerTest.get_input', return_value='(a + 5) * (3 - x) +(x)= 5')
     def test_first_part_operation4(self, input):
-        result = \
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = \
             {
                 'coefficient': '1', 'sign': '+',
                 'operation':
@@ -226,11 +279,16 @@ class MyTestCase(TestCase):
                         }
                 ],
             }
-        self.assertEqual(forTest(), result)
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
     @patch('computerTest.get_input', return_value='(a + 5) * (3 - x) + funcA(x)= 5')
     def test_first_part_operation5(self, input):
-        result = \
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = \
             {
                 'coefficient': '1', 'sign': '+',
                 'operation':
@@ -276,11 +334,17 @@ class MyTestCase(TestCase):
                         }
                     ],
             }
-        self.assertEqual(forTest(), result)
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
+
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
     @patch('computerTest.get_input', return_value='(a + 5) * (4 / (3 - x)) = 5')
     def test_first_part_operation6(self, input):
-        result = \
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = \
             {
                 'coefficient': '1', 'sign': '+',
                 'operation':
@@ -300,12 +364,17 @@ class MyTestCase(TestCase):
                      'sign': '*'}
                  ],
             }
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
 
-        self.assertEqual(forTest(), result)
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
     @patch('computerTest.get_input', return_value='(a + 5) = 5')
     def test_first_part_operation7(self, input):
-        result = \
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = \
             {
                 'coefficient': '1',
                 'sign': '+',
@@ -318,13 +387,18 @@ class MyTestCase(TestCase):
                     ]}
                 ],
             }
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
 
-        self.assertEqual(forTest(), result)
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
 
     @patch('computerTest.get_input', return_value='funcA(a + 5) * (4 / (3 - x)) = 5')
     def test_first_part_function(self, input):
-        result = {
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = {
             'coefficient': '1', 'sign': '+',
             'operation':
                       [
@@ -338,12 +412,17 @@ class MyTestCase(TestCase):
                               ]}]}
                       ],
         }
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
 
-        self.assertEqual(forTest(), result)
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
-    @patch('computerTest.get_input', return_value='funcA(5) = 3')
+    @patch('computerTest.get_input', return_value='funcA(5) = ?')
     def test_first_part_function2(self, input):
-        result = {
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = {
             'coefficient': '1', 'sign': '+',
             'operation': [{
                 'function': {
@@ -355,12 +434,17 @@ class MyTestCase(TestCase):
                 "sign": '+'}
             ],
         }
+        test2 = {'resolution': True}
 
-        self.assertEqual(forTest(), result)
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
-    @patch('computerTest.get_input', return_value='funcA(a + 5) * (4 / (3 - x)) + [[2, 3], [1, 2], [4, 5]] = 5')
+    @patch('computerTest.get_input', return_value='funcA(a + 5) * (4 / (3 - x)) + [[2, 3]; [1, 2]; [4, 5]] = 5')
     def test_first_part_function3(self, input):
-        result = {
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = {
             'coefficient': '1', 'sign': '+',
             'operation':
                       [
@@ -383,12 +467,17 @@ class MyTestCase(TestCase):
                           }
                       ],
         }
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
 
-        self.assertEqual(forTest(), result)
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
-    @patch('computerTest.get_input', return_value='funcA(a + 5)^2 * (4^puissance / (3 - x^5)) + [[2, 3], [1, 2], [4, 5]]^5 = 5')
+    @patch('computerTest.get_input', return_value='funcA(a + 5)^2 * (4^puissance / (3 - x^5)) + [[2, 3]; [1, 2]; [4, 5]]^5 = 5')
     def test_first_part_puissance(self, input):
-        result = {
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = {
             'coefficient': '1', 'sign': '+',
             'operation':
                 [
@@ -416,16 +505,43 @@ class MyTestCase(TestCase):
                     }
                 ],
         }
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
 
-        self.assertEqual(forTest(), result)
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
-    @patch('computerTest.get_input', return_value='3x + 2 = 5')
+    @patch('computerTest.get_input', return_value='3x + 2 = 5 ?')
     def test_construction(self, input):
-        result = {
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = {'coefficient': '1',
+                  'operation': [
+                      {'coefficient': '1', 'number': 3, 'sign': '+'},
+                      {'coefficient': '1', 'sign': '*', 'variable': 'x'},
+                      {'coefficient': '1', 'number': 2, 'sign': '+'}],
+                  'sign': '+'}
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': True}
 
-        }
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
-        self.assertEqual(forTest(), result)
+    @patch('computerTest.get_input', return_value='3x + 2i = 5')
+    def test_construction_imaginaire(self, input):
+        equation = forTest()
+        equationPart1 = equation.first
+        equationPart2 = equation.second
+        test1 = {'coefficient': '1',
+                  'operation': [
+                      {'coefficient': '1', 'number': 3, 'sign': '+'},
+                      {'coefficient': '1', 'sign': '*', 'variable': 'x'},
+                      {'coefficient': '1', 'number': 2, 'sign': '+'},
+                      {'coefficient': '1', 'imaginaire': 'i', 'sign': '*'}],
+                  'sign': '+'}
+        test2 = {'number': 5, 'coefficient': '1', 'sign': '+', 'resolution': False}
+
+        self.assertEqual(equationPart1, test1)
+        self.assertEqual(equationPart2, test2)
 
 if __name__ == '__main__':
     main()

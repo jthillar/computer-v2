@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from methods import ParseInfo, Calcul
+from parsing import ParseInfo
 
 result = dict()
 
@@ -12,15 +12,12 @@ def getData(entry):
 	if not info.parse:
 		return
 
-	result[info.firstPart.replace(' ','')] = info.secondPart
-
-	return info.first
+	return info
 
 if __name__ == '__main__':
 
 	if len(sys.argv) > 1:
 		exit('You shouln\'t set an entry')
-
 
 	while True:
 		inp = str(input("> "))
